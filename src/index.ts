@@ -22,6 +22,7 @@ import app from './server';
 
 // Create HTTP server
 const server = http.createServer(app);
+console.log('here!!')
 
 // Configure CORS
 const corsOptions = {
@@ -30,6 +31,7 @@ const corsOptions = {
   allowedHeaders: ['Content-Type'],
   credentials: true,
 };
+console.log('here2')
 
 // Initialize Socket.IO
 const io = new SocketIOServer(server, {
@@ -37,6 +39,8 @@ const io = new SocketIOServer(server, {
 });
 
 // Socket.IO connection handler
+console.log('here')
+
 console.log('io', io)
 io.on('connection', (socket) => {
   logger.info('A user connected');

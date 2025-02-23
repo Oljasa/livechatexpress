@@ -37,25 +37,34 @@ const io = new SocketIOServer(server, {
 });
 
 // Socket.IO connection handler
+console.log('io', io)
 io.on('connection', (socket) => {
   logger.info('A user connected');
 
   // Handle 'joinRoom' event
   socket.on('joinRoom', (room) => {
     socket.join(room);
-    logger.info(`User joined room: ${room}`);
+    console.log(`Socket ${socket.id} joined room ${room}`);
   });
 
   // Handle 'chatMessage' event
   socket.on('chatMessage', (msg) => {
+    console.log("msg:   " + msg.room)
     const { room, message } = msg;
-    io.to(room).emit('chatMessage', {id: socket.id, message});
+    io.to(room).emit('chatMessage', {id: socket.id, message, room: msg.room});
     logger.info(`Message sent to room ${room}: ${message}`);
   });
 
   // Handle disconnect
   socket.on('disconnect', () => {
     logger.info('A user disconnected');
+  });
+  
+  socket.on('leaveRoom', (room) => {
+    socket.leave(room);
+    console.log(`Socket ${socket.id} left room ${room}`);
+    // Optionally, notify others.
+    socket.to(room).emit('systemMessage', `User ${socket.id} left the room.`);
   });
 });
 

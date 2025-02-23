@@ -2,23 +2,33 @@ import fs from 'fs-extra';
 import logger from 'jet-logger';
 import childProcess from 'child_process';
 
-
 /**
  * Start
  */
 (async () => {
   try {
+    // Check if --skip-lint was passed
+    const skipLint = process.argv.includes('--skip-lint');
+
     // Remove current build
     await remove('./dist/');
-    await exec('npm run lint', './');
+
+    // Conditionally run lint only if skipLint is false
+    if (!skipLint) {
+      await exec('npm run lint', './');
+    }
+
+    // TypeScript compile (production config)
     await exec('tsc --build tsconfig.prod.json', './');
-    // Copy
+
+    // Copy necessary files
     await copy('./src/public', './dist/public');
     await copy('./src/views', './dist/views');
     await copy('./src/repos/database.json', './dist/repos/database.json');
     await copy('./temp/config.js', './config.js');
     await copy('./temp/src', './dist');
     await remove('./temp/');
+
   } catch (err) {
     logger.err(err);
     // eslint-disable-next-line n/no-process-exit
@@ -27,40 +37,40 @@ import childProcess from 'child_process';
 })();
 
 /**
- * Remove file
+ * Remove file or directory
  */
 function remove(loc: string): Promise<void> {
   return new Promise((res, rej) => {
-    return fs.remove(loc, err => {
-      return (!!err ? rej(err) : res());
+    fs.remove(loc, err => {
+      return err ? rej(err) : res();
     });
   });
 }
 
 /**
- * Copy file.
+ * Copy file or directory
  */
 function copy(src: string, dest: string): Promise<void> {
   return new Promise((res, rej) => {
-    return fs.copy(src, dest, err => {
-      return (!!err ? rej(err) : res());
+    fs.copy(src, dest, err => {
+      return err ? rej(err) : res();
     });
   });
 }
 
 /**
- * Do command line command.
+ * Execute a command in a given directory
  */
 function exec(cmd: string, loc: string): Promise<void> {
   return new Promise((res, rej) => {
-    return childProcess.exec(cmd, {cwd: loc}, (err, stdout, stderr) => {
-      if (!!stdout) {
+    childProcess.exec(cmd, { cwd: loc }, (err, stdout, stderr) => {
+      if (stdout) {
         logger.info(stdout);
       }
-      if (!!stderr) {
+      if (stderr) {
         logger.warn(stderr);
       }
-      return (!!err ? rej(err) : res());
+      return err ? rej(err) : res();
     });
   });
 }

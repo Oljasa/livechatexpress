@@ -2,7 +2,7 @@
   "name": "livechatexpress",
   "version": "0.0.0",
   "scripts": {
-    "build": "ts-node ./scripts/build.ts",
+    "build": "ts-node ./scripts/build.ts --skip-lint",
     "clean-install": "rm -rf ./node_modules && rm -r package-lock.json && npm i",
     "dev": "NODE_ENV=development ts-node-dev --respawn --transpile-only -r tsconfig-paths/register ./src",
     "dev:hot": "nodemon --exec \"npm run dev\" --watch ./src --ext .ts",

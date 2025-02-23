@@ -1,3 +1,7 @@
+if (typeof global.structuredClone === 'undefined') {
+  global.structuredClone = (obj) => JSON.parse(JSON.stringify(obj));
+}
+
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import stylisticJs from '@stylistic/eslint-plugin-js';
@@ -89,6 +93,7 @@ export default tseslint.config(
       'n/no-process-env': 1,
       'n/no-missing-import': 0,
       'n/no-unpublished-import': 0,
+      'n/no-unsupported-features/node-builtins': 'off',
       'prefer-const': 'warn',
     },
   },

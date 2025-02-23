@@ -69,11 +69,11 @@ io.on('connection', (socket) => {
     console.log(`Socket ${socket.id} left room ${room}`);
     // Optionally, notify others.
     socket.to(room).emit('systemMessage', `User ${socket.id} left the room.`);
-  });
+  }); 
 });
 
 // Start the server
 const PORT = ENV.Port || 3000;
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   logger.info(`Server started on port: ${PORT}`);
 });
